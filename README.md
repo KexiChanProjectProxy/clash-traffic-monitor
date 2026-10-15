@@ -7,7 +7,7 @@ Android 12+), keeps the screen on while open.
 
 ## Build
 
-Builds on the remote host `202.201.1.132` (Java 17 + Android SDK there):
+Local builds run on a remote host with Java 17 and the Android SDK. Put its ssh host or alias in an untracked `.build-host` file, or set `BUILD_HOST`:
 
     scripts/build-remote.sh            # -> dist/clash-traffic-monitor.apk
     scripts/build-remote.sh --install  # also adb install to a connected device
@@ -25,3 +25,10 @@ Point the app at `<this machine's IP>:9090`.
 Dashboard screenshots render on the JVM via Paparazzi:
 `./gradlew testDebugUnitTest --tests '*Screenshot*'`, output in
 `app/build/reports/paparazzi/`.
+
+## Releases
+
+Pushing a `v*` tag runs `.github/workflows/release.yml`, which tests, builds a signed
+release APK and attaches it to a GitHub release. Signing uses the repository secrets
+`KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS` and `KEY_PASSWORD`, which hold the same
+key as the local builds, so CI and local APKs can update each other.

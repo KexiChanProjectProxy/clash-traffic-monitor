@@ -3,15 +3,17 @@
 # Usage: scripts/build-remote.sh [--install]
 set -euo pipefail
 
-HOST="${BUILD_HOST:-202.201.1.132}"
-REMOTE_DIR="${REMOTE_DIR:-dev/clash-traffic-monitor}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
+# Build host comes from $BUILD_HOST or the untracked .build-host file (an ssh host/alias).
+HOST="${BUILD_HOST:-$(cat .build-host 2>/dev/null || true)}"
+[ -n "$HOST" ] || { echo "Set BUILD_HOST or write the ssh host to .build-host" >&2; exit 1; }
+REMOTE_DIR="${REMOTE_DIR:-dev/clash-traffic-monitor}"
 
 echo ">> Syncing sources to $HOST:$REMOTE_DIR"
 ssh "$HOST" "mkdir -p $REMOTE_DIR"
 rsync -az --delete \
-  --exclude .git --exclude build --exclude .gradle --exclude dist \
+  --exclude .git --exclude .build-host --exclude build --exclude .gradle --exclude dist \
   --exclude local.properties --exclude '*.jks' \
   ./ "$HOST:$REMOTE_DIR/"
 

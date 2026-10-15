@@ -24,8 +24,9 @@ android {
         applicationId = "com.zenkexi.clashmonitor"
         minSdk = 29
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        // CI passes these from the git tag and run number.
+        versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
+        versionName = System.getenv("VERSION_NAME") ?: "1.0.0"
     }
 
     signingConfigs {
